@@ -34,6 +34,9 @@ users.get('/:userId', (req, res) => {
   User.findById(userId)
     .then((user) => res.send({ data: user }))
     .catch((err) => {
+      if (err.name === 'ValidationError') {
+        res.status(ERROR_CODE_400).send({ message: err.message });
+      }
       if (err.name === 'CastError') {
         res.status(ERROR_CODE_404).send({ message: err.message });
       } else {
