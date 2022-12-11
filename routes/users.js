@@ -32,21 +32,20 @@ users.post('/', (req, res) => {
 users.get('/:userId', (req, res) => {
   const { userId } = req.params;
   User.findById(userId)
-  .then((user) => {
-    if(user === null) {
-      res.status(404).send({data: "Такого пользователя не существует"})
-      return;
-    }
-    res.send({data: user})
-  })
-  .catch((err) => {
-    if (err.name === 'CastError' || err.name === 'ValidationError') {
-      res.status(ERROR_CODE_400).send({ message: err.message });
-    } else {
-      res.status(ERROR_CODE_500).send({ message: "Произошла ошибка" });
-    }
-  })
-
+    .then((user) => {
+      if (user === null) {
+        res.status(404).send({ message: 'Такого пользователя не существует' });
+        return;
+      }
+      res.send({ data: user });
+    })
+    .catch((err) => {
+      if (err.name === 'CastError' || err.name === 'ValidationError') {
+        res.status(ERROR_CODE_400).send({ message: err.message });
+      } else {
+        res.status(ERROR_CODE_500).send({ message: 'Произошла ошибка' });
+      }
+    });
 });
 
 users.patch('/me', (req, res) => {
@@ -56,7 +55,7 @@ users.patch('/me', (req, res) => {
     about: about,
   })
     .then((user) => {
-      res.send(user); // Возвращается информация о пользователе с опазданием на один шаг.
+      res.send(req.body); // Возвращается информация о пользователе с опазданием на один шаг.
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
