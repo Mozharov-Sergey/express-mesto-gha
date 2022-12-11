@@ -31,24 +31,22 @@ users.post('/', (req, res) => {
 
 users.get('/:userId', (req, res) => {
   const { userId } = req.params;
-
   User.findById(userId)
-    .then((user) =>
-      user !== null
-        ? res.send({ data: user })
-        : res.status(ERROR_CODE_404).send({ message: 'Запрашиваемый пользователь не найден' })
-    )
-    .catch((err) => {
-      res.send(err);
-      if (err.name === 'ValidationError') {
-        res.status(ERROR_CODE_400).send({ message: err.message });
-      }
-      if (err.name === 'CastError') {
-        res.status(ERROR_CODE_404).send({ message: err.message });
-      } else {
-        res.status(ERROR_CODE_500).send({ message: 'Произошла ошибка' });
-      }
-    });
+  .then((user) => {
+    if(user === null) {
+      res.status(404).send({data: "Такого пользователя не существует"})
+      return;
+    }
+    res.send({data: user})
+  })
+  .catch((err) => {
+    if (err.name === 'CastError' || err.name === 'ValidationError') {
+      res.status(ERROR_CODE_400).send({ message: err.message });
+    } else {
+      res.status(ERROR_CODE_500).send({ message: "Произошла ошибка" });
+    }
+  })
+
 });
 
 users.patch('/me', (req, res) => {
