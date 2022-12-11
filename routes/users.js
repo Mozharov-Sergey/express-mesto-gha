@@ -1,4 +1,5 @@
 const express = require('express');
+const { set } = require('mongoose');
 const users = express.Router();
 
 const User = require('../models/user');
@@ -32,8 +33,13 @@ users.get('/:userId', (req, res) => {
   const { userId } = req.params;
 
   User.findById(userId)
-    .then((user) => res.send({ data: user }))
+    .then((user) =>
+      user !== null
+        ? res.send({ data: user })
+        : res.status(ERROR_CODE_404).send({ message: 'Запрашиваемый пользователь не найден' })
+    )
     .catch((err) => {
+      res.send(err);
       if (err.name === 'ValidationError') {
         res.status(ERROR_CODE_400).send({ message: err.message });
       }
