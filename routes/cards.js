@@ -29,10 +29,16 @@ cards.post('/', (req, res) => {
 cards.delete('/:cardId', (req, res) => {
   const { cardId } = req.params;
   Card.findByIdAndRemove(cardId)
-    .then((card) => res.send({ message: 'Карточка удалена' }))
+    .then((card) => {
+      if (card) {
+        res.send({ message: 'Карточка удалена' });
+      } else {
+        res.status(ERROR_CODE_404).send({message: "card not found"})
+      }
+    })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(ERROR_CODE_404).send({ message: err.message });
+        res.status(ERROR_CODE_400).send({ message: err.message });
       } else {
         res.status(ERROR_CODE_500).send({ message: 'Произошла ошибка' });
       }
@@ -71,7 +77,7 @@ cards.delete('/:cardId/likes', (req, res) => {
       if (card) {
         res.send({ message: card });
       }
-      res.status(ERROR_CODE_404).send({message: "not found"})
+      res.status(ERROR_CODE_404).send({ message: 'not found' });
     })
 
     .catch((err) => {
