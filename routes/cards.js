@@ -44,14 +44,23 @@ cards.put('/:cardId/likes', (req, res) => {
     { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
     { new: true }
   )
-    .then((card) => res.send(card))
+    .then((card) =>
+    {
+      if (card === null) {
+        res.status(404).send({ message: 'Такого пользователя не существует или лайк уже поставлен' });
+        return;
+      }
+      res.send({ data: user });
+    }
+    )
     .catch((err) => {
-      if (err.name === 'ValidationError') {
+      if (err.name === 'ValidationError' || err.name === 'CastError') {
         res.status(ERROR_CODE_400).send({ message: err.message });
       }
-      if (err.name === 'CastError') {
-        res.status(ERROR_CODE_404).send({ message: err.message });
-      } else {
+      // if (err.name === 'CastError') {
+      //   res.status(ERROR_CODE_404).send({ message: err.message });
+      // }
+      else {
         res.status(ERROR_CODE_500).send({ message: 'Произошла ошибка' });
       }
     });
