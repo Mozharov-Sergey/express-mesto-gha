@@ -3,6 +3,7 @@ const { set } = require('mongoose');
 const users = express.Router();
 
 const User = require('../models/user');
+const opts = { runValidators: true };
 
 const ERROR_CODE_404 = 404;
 const ERROR_CODE_400 = 400;
@@ -18,6 +19,7 @@ users.get('/', (req, res) => {
 
 users.post('/', (req, res) => {
   const { name, about, avatar } = req.body;
+
   User.create({ name, about, avatar })
     .then((user) => res.send({ data: user }))
     .catch((err) => {
@@ -48,25 +50,23 @@ users.get('/:userId', (req, res) => {
     });
 });
 
+
 users.patch('/me', (req, res) => {
   const { name, about } = req.body;
   User.findByIdAndUpdate(req.user._id, {
     name: name,
-    about: about,
+    about: about
+  }, opts)
+  .then((user) => {
+    res.send({data: req.body});
   })
-    .then((user) => {
-      res.send(req.body); // Возвращается информация о пользователе с опазданием на один шаг.
-    })
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
+  .catch((err) => {
+          if (err.name === 'CastError' || err.name === 'ValidationError') {
         res.status(ERROR_CODE_400).send({ message: err.message });
-      }
-      if (err.name === 'CastError') {
-        res.status(ERROR_CODE_404).send({ message: err.message });
       } else {
         res.status(ERROR_CODE_500).send({ message: 'Произошла ошибка' });
       }
-    });
+  })
 });
 
 users.patch('/me/avatar', (req, res) => {
@@ -75,7 +75,7 @@ users.patch('/me/avatar', (req, res) => {
     avatar: avatar,
   })
     .then((user) => {
-      res.send(user); // Возвращается информация о пользователе с опазданием на один шаг.
+      res.send(req.body);
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
