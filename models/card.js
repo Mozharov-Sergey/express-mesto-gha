@@ -16,7 +16,7 @@ const cardSchema = new mongoose.Schema({
     ref: 'user',
     required: true,
   },
-  // НЕ УВЕРЕН В ПРАВИЛЬНОСТИ ПОЛЯ ЛАЙКОВ. НУЖНО ПРОВЕРИТЬ
+  
   likes: [{
     default: [],
     type: mongoose.Schema.Types.ObjectId,

@@ -1,4 +1,5 @@
 const express = require('express');
+const { restart } = require('nodemon');
 const cards = express.Router();
 
 const Card = require('../models/card');
@@ -44,23 +45,17 @@ cards.put('/:cardId/likes', (req, res) => {
     { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
     { new: true }
   )
-    .then((card) =>
-    {
+    .then((card) => {
       if (card === null) {
-        res.status(404).send({ message: 'Такого пользователя не существует или лайк уже поставлен' });
+        res.status(404).send({ message: 'Такого пользователя не существует' });
         return;
       }
       res.send({ data: user });
-    }
-    )
+    })
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
         res.status(ERROR_CODE_400).send({ message: err.message });
-      }
-      // if (err.name === 'CastError') {
-      //   res.status(ERROR_CODE_404).send({ message: err.message });
-      // }
-      else {
+      } else {
         res.status(ERROR_CODE_500).send({ message: 'Произошла ошибка' });
       }
     });
@@ -72,15 +67,18 @@ cards.delete('/:cardId/likes', (req, res) => {
     { $pull: { likes: req.user._id } }, // убрать _id из массива
     { new: true }
   )
-    .then((card) => res.send(card))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res.status(ERROR_CODE_400).send({ message: err.message });
+    .then((card) => {
+      if (card) {
+        res.send({ message: card });
       }
-      if (err.name === 'CastError') {
-        res.status(ERROR_CODE_404).send({ message: err.message });
+      res.status(ERROR_CODE_404).send({message: "not found"})
+    })
+
+    .catch((err) => {
+      if (err.name === 'ValidationError' || err.name === 'CastError') {
+        res.status(ERROR_CODE_400).send({ message: err.message });
       } else {
-        res.status(ERROR_CODE_500).send({ message: 'Произошла ошибка' });
+        res.status(ERROR_CODE_500).send({ message: err });
       }
     });
 });
