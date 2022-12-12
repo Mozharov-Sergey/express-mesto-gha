@@ -14,3 +14,16 @@
 
 `npm run start` — запускает сервер   
 `npm run dev` — запускает сервер с hot-reload
+
+##
+Ссылка на файл проекта.
+Не понял на какой конкретно проект нужна ссылка.
+# На этот (Ссылка на самого себя)
+https://github.com/Mozharov-Sergey/express-mesto-gha
+
+# Frontend часть
+https://github.com/Mozharov-Sergey/react-mesto-auth
+
+
+
+
