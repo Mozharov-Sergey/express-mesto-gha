@@ -33,7 +33,7 @@ cards.delete('/:cardId', (req, res) => {
       if (card) {
         res.send({ message: 'Карточка удалена' });
       } else {
-        res.status(ERROR_CODE_404).send({message: "card not found"})
+        res.status(ERROR_CODE_404).send({ message: 'card not found' });
       }
     })
     .catch((err) => {
@@ -52,11 +52,11 @@ cards.put('/:cardId/likes', (req, res) => {
     { new: true }
   )
     .then((card) => {
-      if (card === null) {
-        res.status(404).send({ message: 'Такого пользователя не существует' });
+      if (card) {
+        res.send({ data: card });
         return;
       }
-      res.send({ data: user });
+      res.status(404).send({ message: 'Такой карточки не существует' });
     })
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
@@ -75,7 +75,7 @@ cards.delete('/:cardId/likes', (req, res) => {
   )
     .then((card) => {
       if (card) {
-        res.send({ message: card });
+        res.send({ data: card });
       }
       res.status(ERROR_CODE_404).send({ message: 'not found' });
     })
@@ -84,7 +84,7 @@ cards.delete('/:cardId/likes', (req, res) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
         res.status(ERROR_CODE_400).send({ message: err.message });
       } else {
-        res.status(ERROR_CODE_500).send({ message: err });
+        res.status(ERROR_CODE_500).send({ message: err.message });
       }
     });
 });
