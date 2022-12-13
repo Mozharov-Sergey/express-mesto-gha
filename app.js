@@ -1,10 +1,11 @@
-/* eslint-disable  no-console */
+/* eslint-disable   no-console */
 
 const PORT = process.env.PORT || 3000;
 const express = require('express');
 const mongoose = require('mongoose');
 const users = require('./routes/users');
 const cards = require('./routes/cards');
+const { return404 } = require('./utils/utils');
 
 async function connectToDb() {
   try {
@@ -28,9 +29,7 @@ app.use((req, res, next) => {
 
 app.use('/cards', cards);
 app.use('/users', users);
-app.patch('*', (req, res) => {
-  res.status(404).send({ message: 'такой страницы не существует' });
-});
+app.use('*', return404);
 
 app.listen(PORT, () => {
   console.log(`Сервер успешно запущен на порту ${PORT}`);

@@ -1,7 +1,7 @@
 const User = require('../models/user');
 
 const opts = { runValidators: true };
-const { ERROR_CODE_400, ERROR_CODE_404, ERROR_CODE_500 } = require('../utils/constants');
+const { ERROR_CODE_400, ERROR_CODE_500 } = require('../utils/constants');
 
 module.exports.getUsers = (req, res) => {
   User.find({})
