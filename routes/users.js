@@ -1,5 +1,8 @@
-const { getUser, createUser, getUsers, updateUser, updateAvatar } = require('../controllers/users');
 const express = require('express');
+const {
+  getUser, createUser, getUsers, updateUser, updateAvatar,
+} = require('../controllers/users');
+
 const users = express.Router();
 
 users.use(express.json());

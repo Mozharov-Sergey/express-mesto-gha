@@ -1,12 +1,12 @@
 const User = require('../models/user');
-const opts = { runValidators: true };
-const {ERROR_CODE_400, ERROR_CODE_404, ERROR_CODE_500} = require('../utils/constants');
 
+const opts = { runValidators: true };
+const { ERROR_CODE_400, ERROR_CODE_404, ERROR_CODE_500 } = require('../utils/constants');
 
 module.exports.getUsers = (req, res) => {
   User.find({})
     .then((users) => res.send(users))
-    .catch((err) => res.status(ERROR_CODE_500).send({ message: 'Произошла ошибка' }));
+    .catch(() => res.status(ERROR_CODE_500).send({ message: 'Произошла ошибка' }));
 };
 
 module.exports.createUser = (req, res) => {
@@ -34,7 +34,7 @@ module.exports.getUser = (req, res) => {
       res.send({ data: user });
     })
     .catch((err) => {
-      if (err.name === 'CastError' || err.name === 'ValidationError') {
+      if (err.name === 'CastError') {
         res.status(ERROR_CODE_400).send({ message: err.message });
       } else {
         res.status(ERROR_CODE_500).send({ message: 'Произошла ошибка' });
@@ -47,12 +47,12 @@ module.exports.updateUser = (req, res) => {
   User.findByIdAndUpdate(
     req.user._id,
     {
-      name: name,
-      about: about,
+      name,
+      about,
     },
-    opts
+    opts,
   )
-    .then((user) => {
+    .then(() => {
       res.send({ data: req.body });
     })
     .catch((err) => {
@@ -67,9 +67,9 @@ module.exports.updateUser = (req, res) => {
 module.exports.updateAvatar = (req, res) => {
   const { avatar } = req.body;
   User.findByIdAndUpdate(req.user._id, {
-    avatar: avatar,
+    avatar,
   })
-    .then((user) => {
+    .then(() => {
       res.send(req.body);
     })
     .catch((err) => {
@@ -77,7 +77,7 @@ module.exports.updateAvatar = (req, res) => {
         res.status(ERROR_CODE_400).send({ message: err.message });
       }
       if (err.name === 'CastError') {
-        res.status(ERROR_CODE_404).send({ message: err.message });
+        res.status(ERROR_CODE_400).send({ message: err.message });
       } else {
         res.status(ERROR_CODE_500).send({ message: 'Произошла ошибка' });
       }

@@ -1,5 +1,6 @@
-const PORT = process.env.PORT || 3000;
+/* eslint-disable  no-console */
 
+const PORT = process.env.PORT || 3000;
 const express = require('express');
 const mongoose = require('mongoose');
 const users = require('./routes/users');
@@ -27,8 +28,8 @@ app.use((req, res, next) => {
 
 app.use('/cards', cards);
 app.use('/users', users);
-app.patch('*', function(req, res){
-  res.status(404).send({message: "такой страницы не существует"});
+app.patch('*', (req, res) => {
+  res.status(404).send({ message: 'такой страницы не существует' });
 });
 
 app.listen(PORT, () => {

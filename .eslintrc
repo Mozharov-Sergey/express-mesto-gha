@@ -1,11 +1,13 @@
 {
   "extends": "airbnb-base",
-  "overrides": [
+  "rules": {
+    "no-underscore-dangle": [
+      "error",
     {
-      "files": ["*.js"],
-      "rules": {
-        "eslint no-underscore-dangle": "allow"
-      }
+      "allow": [
+        "_id"
+      ]
     }
-  ]
+    ]
+  }
 }

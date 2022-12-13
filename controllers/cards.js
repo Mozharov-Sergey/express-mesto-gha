@@ -1,12 +1,10 @@
-
 const Card = require('../models/card');
-const {ERROR_CODE_400, ERROR_CODE_404, ERROR_CODE_500} = require('../utils/constants');
-
+const { ERROR_CODE_400, ERROR_CODE_404, ERROR_CODE_500 } = require('../utils/constants');
 
 module.exports.getCards = (req, res) => {
   Card.find({})
     .then((cards) => res.send({ data: cards }))
-    .catch((err) => res.status(ERROR_CODE_500).send({ message: 'Произошла ошибка' }));
+    .catch(() => res.status(ERROR_CODE_500).send({ message: 'Произошла ошибка' }));
 };
 
 module.exports.createCard = (req, res) => {
@@ -45,7 +43,7 @@ module.exports.cardLike = (req, res) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
-    { new: true }
+    { new: true },
   )
     .then((card) => {
       if (card) {
@@ -67,7 +65,7 @@ module.exports.cardDislike = (req, res) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $pull: { likes: req.user._id } }, // убрать _id из массива
-    { new: true }
+    { new: true },
   )
     .then((card) => {
       if (card) {
