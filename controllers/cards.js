@@ -1,45 +1,53 @@
+/* eslint-disable consistent-return */
 const Card = require('../models/card');
 const { ERROR_CODE_400, ERROR_CODE_404, ERROR_CODE_500 } = require('../utils/constants');
+const AuthorizationError = require('../errors/AuthorizationError');
+const BadRequestError = require('../errors/BadRequestError');
+const ConflictError = require('../errors/ConflictError');
+const NotFoundError = require('../errors/NotFoundError');
+const UnauthorizedError = require('../errors/UnauthorizedError');
 
-module.exports.getCards = (req, res) => {
+module.exports.getCards = (req, res, next) => {
   Card.find({})
     .then((cards) => res.send({ data: cards }))
-    .catch(() => res.status(ERROR_CODE_500).send({ message: 'Произошла ошибка' }));
+    .catch((err) => next(err));
 };
 
-module.exports.createCard = (req, res) => {
+module.exports.createCard = (req, res, next) => {
   const { name, link } = req.body;
   Card.create({ name, link, owner: req.user._id })
     .then((card) => res.send(card))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(ERROR_CODE_400).send({ message: err.message });
-      } else {
-        res.status(ERROR_CODE_500).send({ message: 'Произошла ошибка' });
+        next(new BadRequestError(err.message));
       }
+      next(err);
     });
 };
 
-module.exports.deleteCard = (req, res) => {
-  const { cardId } = req.params;
-  Card.findByIdAndRemove(cardId)
-    .then((card) => {
-      if (card) {
-        res.send({ message: 'Карточка удалена' });
-      } else {
-        res.status(ERROR_CODE_404).send({ message: 'card not found' });
-      }
-    })
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        res.status(ERROR_CODE_400).send({ message: err.message });
-      } else {
-        res.status(ERROR_CODE_500).send({ message: 'Произошла ошибка' });
-      }
-    });
+module.exports.deleteCard = async (req, res, next) => {
+  try {
+    const { cardId } = req.params;
+    const card = await Card.findById(cardId);
+    const userId = req.user._id;
+    const cardOwner = card.owner.valueOf();
+
+    const match = userId === cardOwner;
+
+    if (!match) {
+      throw new UnauthorizedError('У вас нет прав на удаление карточке другого пользователя');
+    }
+
+    if (match) {
+      await Card.findByIdAndRemove(cardId); // Или все таки Delete?
+      return res.send({ deleted: card });
+    }
+  } catch (err) {
+    next(err);
+  }
 };
 
-module.exports.cardLike = (req, res) => {
+module.exports.cardLike = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
@@ -47,21 +55,19 @@ module.exports.cardLike = (req, res) => {
   )
     .then((card) => {
       if (card) {
-        res.send({ data: card });
-        return;
+        return res.send({ data: card });
       }
-      res.status(404).send({ message: 'Такой карточки не существует' });
+      next(new NotFoundError('Такой карточки не существует'));
     })
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
-        res.status(ERROR_CODE_400).send({ message: err.message });
-      } else {
-        res.status(ERROR_CODE_500).send({ message: 'Произошла ошибка' });
+        next(new BadRequestError(err.message));
       }
+      next(err);
     });
 };
 
-module.exports.cardDislike = (req, res) => {
+module.exports.cardDislike = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $pull: { likes: req.user._id } }, // убрать _id из массива
@@ -71,14 +77,14 @@ module.exports.cardDislike = (req, res) => {
       if (card) {
         res.send({ data: card });
       }
-      res.status(ERROR_CODE_404).send({ message: 'not found' });
+      next(new NotFoundError('Такой карточки не существует'))
     })
 
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
-        res.status(ERROR_CODE_400).send({ message: err.message });
+        next(new BadRequestError(err.message));
       } else {
-        res.status(ERROR_CODE_500).send({ message: err.message });
+        next(err);
       }
     });
 };
