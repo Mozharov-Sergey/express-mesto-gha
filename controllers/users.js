@@ -4,7 +4,6 @@ const validator = require('validator');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
-
 const User = require('../models/user');
 
 const opts = { runValidators: true };
@@ -14,8 +13,6 @@ const BadRequestError = require('../errors/BadRequestError');
 const ConflictError = require('../errors/ConflictError');
 const NotFoundError = require('../errors/NotFoundError');
 
-
-
 module.exports.getUsers = (req, res, next) => {
   User.find({})
     .then((users) => res.send(users))
@@ -23,7 +20,9 @@ module.exports.getUsers = (req, res, next) => {
 };
 
 module.exports.createUser = async (req, res, next) => {
-  const { name, about, avatar, email, password } = req.body;
+  const {
+    name, about, avatar, email, password,
+  } = req.body;
 
   try {
     if (!validator.isEmail(email) || !password) {
@@ -106,7 +105,7 @@ module.exports.updateUser = (req, res, next) => {
       name,
       about,
     },
-    opts
+    opts,
   )
     .then(() => {
       res.send({ data: req.body });
