@@ -1,9 +1,6 @@
 /* eslint-disable consistent-return */
 const Card = require('../models/card');
-const { ERROR_CODE_400, ERROR_CODE_404, ERROR_CODE_500 } = require('../utils/constants');
-const AuthorizationError = require('../errors/AuthorizationError');
 const BadRequestError = require('../errors/BadRequestError');
-const ConflictError = require('../errors/ConflictError');
 const NotFoundError = require('../errors/NotFoundError');
 const UnauthorizedError = require('../errors/UnauthorizedError');
 
@@ -77,7 +74,7 @@ module.exports.cardDislike = (req, res, next) => {
       if (card) {
         res.send({ data: card });
       }
-      next(new NotFoundError('Такой карточки не существует'))
+      next(new NotFoundError('Такой карточки не существует'));
     })
 
     .catch((err) => {

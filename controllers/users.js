@@ -25,7 +25,6 @@ module.exports.createUser = async (req, res, next) => {
 
   try {
     if (!validator.isEmail(email) || !password) {
-      // return res.status(ERROR_CODE_400).send({ message: 'Не введен email или password' });
       throw new BadRequestError('Не введен email или password');
     }
 
@@ -35,6 +34,7 @@ module.exports.createUser = async (req, res, next) => {
     }
 
     const passwordHash = await bcrypt.hash(password, 10);
+
     const newUser = await User.create({
       name,
       about,
@@ -47,6 +47,9 @@ module.exports.createUser = async (req, res, next) => {
       return res.send({ data: newUser });
     }
   } catch (err) {
+    if (err.name === 'ValidationError') {
+      next(new BadRequestError(err.message));
+    }
     next(err);
   }
 };
