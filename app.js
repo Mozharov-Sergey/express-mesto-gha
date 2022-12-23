@@ -5,6 +5,7 @@
 const PORT = process.env.PORT || 3000;
 const express = require('express');
 const mongoose = require('mongoose');
+const { errors } = require('celebrate');
 require('dotenv').config();
 const users = require('./routes/users');
 const cards = require('./routes/cards');
@@ -29,6 +30,7 @@ app.use('/users', users);
 app.post('/signin', login);
 app.post('/signup', createUser);
 app.use('*', return404);
+app.use(errors());
 app.use((err, req, res, next) => {
   try {
     if (err) {
