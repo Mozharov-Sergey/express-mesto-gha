@@ -65,12 +65,12 @@ module.exports.login = async (req, res, next) => {
   try {
     const user = await User.findOne({ email }).select('+password');
     if (!user) {
-      throw new BadRequestError('Не верный пользователь или пароль');
+      throw new AuthorizationError('Не верный пользователь или пароль');
     }
     const isPasswordCorrect = await bcrypt.compare(password, user.password);
 
     if (!isPasswordCorrect) {
-      throw new BadRequestError('Не верный пользователь или пароль');
+      throw new AuthorizationError('Не верный пользователь или пароль');
     }
 
     if (user && isPasswordCorrect) {
