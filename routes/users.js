@@ -44,6 +44,6 @@ users.get('/', getUsers);
 users.get('/me', getMe);
 users.patch('/me', updateUserJoiValidation(), updateUser);
 users.get('/:userId', getUserJoiValidation(), getUser);
-users.patch('/me/avatar',updateAvatarJoiValidation(), updateAvatar);
+users.patch('/me/avatar', updateAvatarJoiValidation(), updateAvatar);
 
 module.exports = users;
