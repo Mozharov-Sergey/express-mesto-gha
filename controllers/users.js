@@ -45,7 +45,11 @@ module.exports.createUser = async (req, res, next) => {
     });
 
     if (newUser) {
-      return res.send({ data: newUser });
+      return res.send({
+        data: {
+          name, about, avatar, email,
+        },
+      });
     }
   } catch (err) {
     if (err.name === 'ValidationError') {
