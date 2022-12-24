@@ -27,6 +27,15 @@ const createUserJoiValidation = () => celebrate({
     .unknown(true),
 });
 
+const signInJoiValidation = () => celebrate({
+  body: Joi.object()
+    .keys({
+      email: Joi.string().required(true).email(),
+      password: Joi.string().required().min(8),
+    }),
+
+});
+
 async function connectToDb() {
   try {
     await mongoose.connect('mongodb://localhost:27017/mestodb', {});
@@ -42,7 +51,7 @@ app.use(express.json());
 
 app.use('/cards', cards);
 app.use('/users', users);
-app.post('/signin', login);
+app.post('/signin', signInJoiValidation(), login); // Почему валидаторы приходится вызывать? Без этого не работают(
 app.post('/signup', createUserJoiValidation(), createUser);
 app.use('*', return404);
 app.use(errors());
