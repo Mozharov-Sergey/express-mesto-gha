@@ -22,7 +22,7 @@ const createUserJoiValidation = () => celebrate({
       about: Joi.string().min(2).max(30),
       avatar: Joi.string().pattern(urlRegexp),
       email: Joi.string().required(true).email(),
-      password: Joi.string().min(8),
+      password: Joi.string().required().min(8),
     })
     .unknown(true),
 });
