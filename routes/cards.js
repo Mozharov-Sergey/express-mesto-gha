@@ -20,12 +20,28 @@ const createCardJoiValidation = () => celebrate({
     .unknown(true),
 });
 
+const likeCardJoiValidation = () => celebrate({
+  params: Joi.object()
+    .keys({
+      cardId: Joi.string().required().length(24),
+    })
+    .unknown(true),
+});
+
+const deleteCardJoiValidation = () => celebrate({
+  params: Joi.object()
+    .keys({
+      cardId: Joi.string().required().length(24),
+    })
+    .unknown(true),
+});
+
 cards.use(auth);
 cards.use(errors());
 cards.get('/', getCards);
 cards.post('/', createCardJoiValidation(), createCard);
-cards.delete('/:cardId', deleteCard);
-cards.put('/:cardId/likes', cardLike);
+cards.delete('/:cardId', deleteCardJoiValidation(), deleteCard);
+cards.put('/:cardId/likes', likeCardJoiValidation(), cardLike);
 cards.delete('/:cardId/likes', cardDislike);
 
 module.exports = cards;
