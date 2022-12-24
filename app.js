@@ -5,12 +5,25 @@
 const PORT = process.env.PORT || 3000;
 const express = require('express');
 const mongoose = require('mongoose');
+const { celebrate, Joi } = require('celebrate');
 const { errors } = require('celebrate');
 require('dotenv').config();
 const users = require('./routes/users');
 const cards = require('./routes/cards');
 const { return404 } = require('./utils/utils');
 const { login, createUser } = require('./controllers/users');
+
+const createUserJoiValidation = () => celebrate({
+  body: Joi.object()
+    .keys({
+      name: Joi.string().min(2).max(30),
+      about: Joi.string().min(2).max(30),
+      avatar: Joi.string(),
+      email: Joi.string().required(true),
+      password: Joi.string().min(8),
+    })
+    .unknown(true),
+});
 
 async function connectToDb() {
   try {
@@ -28,7 +41,7 @@ app.use(express.json());
 app.use('/cards', cards);
 app.use('/users', users);
 app.post('/signin', login);
-app.post('/signup', createUser);
+app.post('/signup', createUserJoiValidation(), createUser);
 app.use('*', return404);
 app.use(errors());
 app.use((err, req, res, next) => {
