@@ -1,7 +1,16 @@
 const express = require('express');
+const { celebrate, Joi } = require('celebrate');
 const { errors } = require('celebrate');
 
 const auth = require('../middlewares/auth');
+
+const getUserJoiValidation = () => celebrate({
+  params: Joi.object()
+    .keys({
+      userId: Joi.string().required(true).length(24),
+    }),
+
+});
 
 const {
   getUser, getUsers, updateUser, updateAvatar, getMe,
@@ -16,7 +25,7 @@ users.use(errors());
 users.get('/', getUsers);
 users.get('/me', getMe);
 users.patch('/me', updateUser);
-users.get('/:userId', getUser);
+users.get('/:userId', getUserJoiValidation(), getUser);
 users.patch('/me/avatar', updateAvatar);
 
 module.exports = users;
