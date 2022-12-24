@@ -12,6 +12,15 @@ const getUserJoiValidation = () => celebrate({
 
 });
 
+const updateUserJoiValidation = () => celebrate({
+  body: Joi.object()
+    .keys({
+      name: Joi.string().min(2).max(30),
+      about: Joi.string().min(2).max(30),
+    }),
+
+});
+
 const {
   getUser, getUsers, updateUser, updateAvatar, getMe,
 } = require('../controllers/users');
@@ -24,7 +33,7 @@ users.use(auth);
 users.use(errors());
 users.get('/', getUsers);
 users.get('/me', getMe);
-users.patch('/me', updateUser);
+users.patch('/me', updateUserJoiValidation(), updateUser);
 users.get('/:userId', getUserJoiValidation(), getUser);
 users.patch('/me/avatar', updateAvatar);
 
