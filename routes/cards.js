@@ -42,6 +42,6 @@ cards.get('/', getCards);
 cards.post('/', createCardJoiValidation(), createCard);
 cards.delete('/:cardId', deleteCardJoiValidation(), deleteCard);
 cards.put('/:cardId/likes', likeCardJoiValidation(), cardLike);
-cards.delete('/:cardId/likes', cardDislike);
+cards.delete('/:cardId/likes', likeCardJoiValidation(), cardDislike);
 
 module.exports = cards;
