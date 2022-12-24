@@ -13,13 +13,15 @@ const cards = require('./routes/cards');
 const { return404 } = require('./utils/utils');
 const { login, createUser } = require('./controllers/users');
 
+const urlRegexp = /https?:\/\/w*\.?[1-9a-z-._~:/?#[\]@!$&'()*+,;=]{1,}#?/i;
+
 const createUserJoiValidation = () => celebrate({
   body: Joi.object()
     .keys({
       name: Joi.string().min(2).max(30),
       about: Joi.string().min(2).max(30),
-      avatar: Joi.string(),
-      email: Joi.string().required(true),
+      avatar: Joi.string().pattern(urlRegexp),
+      email: Joi.string().required(true).email(),
       password: Joi.string().min(8),
     })
     .unknown(true),
