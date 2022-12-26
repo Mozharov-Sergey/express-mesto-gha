@@ -1,7 +1,5 @@
-/* eslint-disable no-useless-escape */
 const mongoose = require('mongoose');
-
-const urlRegexp = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/;
+const { emailRegexp, urlRegexp } = require('../utils/utils');
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -31,7 +29,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
     unique: true,
-    match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'Please fill a valid email address'],
+    match: [emailRegexp, 'Please fill a valid email address'],
   },
   password: {
     type: String,

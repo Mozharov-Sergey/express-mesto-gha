@@ -8,6 +8,10 @@
         "_id"
       ]
     }
-    ]
+    ],
+    "consistent-return": "off",
+    "no-unused-vars": "off",
+    "no-console": "off",
+    "no-useless-escape": "off"
   }
 }
