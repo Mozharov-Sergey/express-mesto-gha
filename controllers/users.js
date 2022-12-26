@@ -125,20 +125,19 @@ module.exports.updateUser = async (req, res, next) => {
   }
 };
 
-module.exports.updateAvatar = (req, res, next) => {
+module.exports.updateAvatar = async (req, res, next) => {
   const { avatar } = req.body;
-  User.findByIdAndUpdate(req.user._id, {
-    avatar,
-  })
-    .then(() => {
-      res.send(req.body);
-    })
-    .catch((err) => {
-      if (err.name === 'ValidationError' && err.name === 'CastError') {
-        return next(new BadRequestError(err.message));
-      }
-      next(err);
+  try {
+    await User.findByIdAndUpdate(req.user._id, {
+      avatar,
     });
+    res.send(req.body);
+  } catch (err) {
+    if (err.name === 'ValidationError' && err.name === 'CastError') {
+      return next(new BadRequestError(err.message));
+    }
+    next(err);
+  }
 };
 
 module.exports.getMe = async (req, res, next) => {
