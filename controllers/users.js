@@ -93,7 +93,9 @@ module.exports.login = async (req, res, next) => {
 module.exports.getUser = async (req, res, next) => {
   const { userId } = req.params;
   try {
-    const user = await User.findById(userId).orFail(() => new NotFoundError('Такого пользователя несуществует'));
+    const user = await User.findById(userId).orFail(
+      () => new NotFoundError('Такого пользователя несуществует'),
+    );
     res.send({ data: user });
   } catch (err) {
     if (err.name === 'CastError') {
@@ -101,40 +103,26 @@ module.exports.getUser = async (req, res, next) => {
     }
     next(err);
   }
-
-  // .then((user) => {
-  //   if (user === null) {
-  //     throw new NotFoundError('Такого пользователя несуществует');
-  //   }
-  //   res.send({ data: user });
-  // })
-  // .catch((err) => {
-  //   if (err.name === 'CastError') {
-  //     return next(new BadRequestError(err.message));
-  //   }
-  //   next(err);
-  // });
 };
 
-module.exports.updateUser = (req, res, next) => {
+module.exports.updateUser = async (req, res, next) => {
   const { name, about } = req.body;
-  User.findByIdAndUpdate(
-    req.user._id,
-    {
-      name,
-      about,
-    },
-    opts,
-  )
-    .then(() => {
-      res.send({ data: req.body });
-    })
-    .catch((err) => {
-      if (err.name === 'CastError' || err.name === 'ValidationError') {
-        return next(new BadRequestError(err.message));
-      }
-      next(err);
-    });
+  try {
+    await User.findByIdAndUpdate(
+      req.user._id,
+      {
+        name,
+        about,
+      },
+      opts,
+    );
+    res.send({ data: req.body });
+  } catch (err) {
+    if (err.name === 'CastError' || err.name === 'ValidationError') {
+      return next(new BadRequestError(err.message));
+    }
+    next(err);
+  }
 };
 
 module.exports.updateAvatar = (req, res, next) => {
