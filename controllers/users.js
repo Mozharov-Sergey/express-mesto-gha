@@ -1,6 +1,5 @@
 /* eslint-disable consistent-return */
 require('dotenv').config();
-const validator = require('validator');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
@@ -28,10 +27,6 @@ module.exports.createUser = async (req, res, next) => {
   } = req.body;
 
   try {
-    // if (!validator.isEmail(email) || !password) {
-    //   throw new BadRequestError('Не введен email или password');
-    // }
-
     const userItem = await User.findOne({ email });
     if (userItem) {
       throw new ConflictError('Такой пользователь уже существует');
