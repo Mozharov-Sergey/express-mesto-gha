@@ -5,10 +5,6 @@ const NotFoundError = require('../errors/NotFoundError');
 const UnauthorizedError = require('../errors/UnauthorizedError');
 
 module.exports.getCards = async (req, res, next) => {
-  // Card.find({})
-  //   .then((cards) => res.send({ data: cards }))
-  //   .catch((err) => next(err));
-
   try {
     const cards = await Card.find({});
     res.send({ message: cards });
@@ -17,16 +13,27 @@ module.exports.getCards = async (req, res, next) => {
   }
 };
 
-module.exports.createCard = (req, res, next) => {
+module.exports.createCard = async (req, res, next) => {
+  // const { name, link } = req.body;
+  // Card.create({ name, link, owner: req.user._id })
+  //   .then((card) => res.send(card))
+  //   .catch((err) => {
+  //     if (err.name === 'ValidationError') {
+  //       next(new BadRequestError(err.message));
+  //     }
+  //     next(err);
+  //   });
+
   const { name, link } = req.body;
-  Card.create({ name, link, owner: req.user._id })
-    .then((card) => res.send(card))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        next(new BadRequestError(err.message));
-      }
-      next(err);
-    });
+  try {
+    const newCard = await Card.create({ name, link, owner: req.user._id });
+    res.send(newCard);
+  } catch (err) {
+    if (err.name === 'ValidationError') {
+      next(new BadRequestError(err.message));
+    }
+    next(err);
+  }
 };
 
 module.exports.deleteCard = async (req, res, next) => {
