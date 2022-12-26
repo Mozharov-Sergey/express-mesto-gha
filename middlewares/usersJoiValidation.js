@@ -1,10 +1,10 @@
 const { celebrate, Joi } = require('celebrate');
 
-const urlRegexp = /https?:\/\/w*\.?[1-9a-z-._~:/?#[\]@!$&'()*+,;=]{1,}#?/i;
+const urlRegexp = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/;
 
 const getUserJoiValidation = () => celebrate({
   params: Joi.object().keys({
-    userId: Joi.string().required(true).length(24),
+    userId: Joi.string().required(true).hex().length(24),
   }),
 });
 
@@ -28,7 +28,7 @@ const createUserJoiValidation = () => celebrate({
       about: Joi.string().min(2).max(30),
       avatar: Joi.string().pattern(urlRegexp),
       email: Joi.string().required(true).email(),
-      password: Joi.string().required().min(8),
+      password: Joi.string().required(),
     })
     .unknown(true),
 });
@@ -37,7 +37,7 @@ const signInJoiValidation = () => celebrate({
   body: Joi.object()
     .keys({
       email: Joi.string().required(true).email(),
-      password: Joi.string().required().min(8),
+      password: Joi.string().required(),
     }),
 });
 
