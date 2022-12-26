@@ -28,9 +28,9 @@ module.exports.createUser = async (req, res, next) => {
   } = req.body;
 
   try {
-    if (!validator.isEmail(email) || !password) {
-      throw new BadRequestError('Не введен email или password');
-    }
+    // if (!validator.isEmail(email) || !password) {
+    //   throw new BadRequestError('Не введен email или password');
+    // }
 
     const userItem = await User.findOne({ email });
     if (userItem) {
@@ -59,7 +59,7 @@ module.exports.createUser = async (req, res, next) => {
     }
   } catch (err) {
     if (err.name === 'ValidationError') {
-      next(new BadRequestError(err.message));
+      return next(new BadRequestError(err.message));
     }
     next(err);
   }
@@ -79,7 +79,7 @@ module.exports.login = async (req, res, next) => {
       throw new AuthorizationError('Не верный пользователь или пароль');
     }
 
-    if (user && isPasswordCorrect) {
+    if (isPasswordCorrect) {
       const token = await jwt.sign({ _id: user._id }, NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret', {
         expiresIn: '7d',
       });
