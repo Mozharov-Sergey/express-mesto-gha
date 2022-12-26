@@ -13,10 +13,13 @@ const BadRequestError = require('../errors/BadRequestError');
 const ConflictError = require('../errors/ConflictError');
 const NotFoundError = require('../errors/NotFoundError');
 
-module.exports.getUsers = (req, res, next) => {
-  User.find({})
-    .then((users) => res.send(users))
-    .catch((err) => next(err));
+module.exports.getUsers = async (req, res, next) => {
+  try {
+    const users = await User.find({});
+    res.send({ data: users });
+  } catch (err) {
+    next(err);
+  }
 };
 
 module.exports.createUser = async (req, res, next) => {
@@ -47,7 +50,10 @@ module.exports.createUser = async (req, res, next) => {
     if (newUser) {
       return res.send({
         data: {
-          name, about, avatar, email,
+          name,
+          about,
+          avatar,
+          email,
         },
       });
     }
@@ -84,21 +90,30 @@ module.exports.login = async (req, res, next) => {
   }
 };
 
-module.exports.getUser = (req, res, next) => {
+module.exports.getUser = async (req, res, next) => {
   const { userId } = req.params;
-  User.findById(userId)
-    .then((user) => {
-      if (user === null) {
-        throw new NotFoundError('Такого пользователя несуществует');
-      }
-      res.send({ data: user });
-    })
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        return next(new BadRequestError(err.message));
-      }
-      next(err);
-    });
+  try {
+    const user = await User.findById(userId).orFail(() => new NotFoundError('Такого пользователя несуществует'));
+    res.send({ data: user });
+  } catch (err) {
+    if (err.name === 'CastError') {
+      return next(new BadRequestError(err.message));
+    }
+    next(err);
+  }
+
+  // .then((user) => {
+  //   if (user === null) {
+  //     throw new NotFoundError('Такого пользователя несуществует');
+  //   }
+  //   res.send({ data: user });
+  // })
+  // .catch((err) => {
+  //   if (err.name === 'CastError') {
+  //     return next(new BadRequestError(err.message));
+  //   }
+  //   next(err);
+  // });
 };
 
 module.exports.updateUser = (req, res, next) => {

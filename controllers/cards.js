@@ -7,7 +7,7 @@ const UnauthorizedError = require('../errors/UnauthorizedError');
 module.exports.getCards = async (req, res, next) => {
   try {
     const cards = await Card.find({});
-    res.send({ message: cards });
+    res.send({ data: cards });
   } catch (err) {
     next(err);
   }
