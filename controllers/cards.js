@@ -20,7 +20,7 @@ module.exports.createCard = async (req, res, next) => {
     res.send(newCard);
   } catch (err) {
     if (err.name === 'ValidationError') {
-      next(new BadRequestError(err.message));
+      return next(new BadRequestError(err.message));
     }
     next(err);
   }
@@ -42,12 +42,12 @@ module.exports.deleteCard = async (req, res, next) => {
     if (!match) {
       throw new UnauthorizedError('У вас нет прав на удаление карточке другого пользователя');
     }
-
-    if (match) {
-      await Card.findByIdAndRemove(cardId); // Или все таки Delete?
-      return res.send({ deleted: card });
-    }
+    await Card.findByIdAndRemove(cardId); // Или все таки Delete?
+    return res.send({ deleted: card });
   } catch (err) {
+    if (err.name === 'CastError') {
+      return next(new BadRequestError(err.message));
+    }
     next(err);
   }
 };
