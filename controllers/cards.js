@@ -4,10 +4,14 @@ const BadRequestError = require('../errors/BadRequestError');
 const NotFoundError = require('../errors/NotFoundError');
 const UnauthorizedError = require('../errors/UnauthorizedError');
 
-module.exports.getCards = (req, res, next) => {
-  Card.find({})
-    .then((cards) => res.send({ data: cards }))
-    .catch((err) => next(err));
+module.exports.getCards = async (req, res, next) => {
+  // Card.find({})
+  //   .then((cards) => res.send({ data: cards }))
+  //   .catch((err) => next(err));
+
+    const cards = await Card.find({}).orFail();
+    res.send(cards);
+
 };
 
 module.exports.createCard = (req, res, next) => {
