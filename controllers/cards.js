@@ -64,8 +64,8 @@ module.exports.cardLike = async (req, res, next) => {
       return res.send({ data: card });
     }
   } catch (err) {
-    if (err.name === 'ValidationError' || err.name === 'CastError') {
-      next(new BadRequestError(err.message));
+    if (err.name === 'CastError') {
+      return next(new BadRequestError(err.message));
     }
     next(err);
   }
@@ -82,10 +82,9 @@ module.exports.cardDislike = async (req, res, next) => {
       res.send({ data: card });
     }
   } catch (err) {
-    if (err.name === 'ValidationError' || err.name === 'CastError') {
-      next(new BadRequestError(err.message));
-    } else {
-      next(err);
+    if (err.name === 'CastError') {
+      return next(new BadRequestError(err.message));
     }
+    next(err);
   }
 };
