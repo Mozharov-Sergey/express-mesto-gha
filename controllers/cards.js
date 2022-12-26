@@ -10,8 +10,8 @@ module.exports.getCards = async (req, res, next) => {
   //   .catch((err) => next(err));
 
   try {
-    const cards = await Card.find({}).orFail();
-    res.send(cards);
+    const cards = Card.find({});
+    res.send({ message: cards });
   } catch (err) {
     next(err);
   }
