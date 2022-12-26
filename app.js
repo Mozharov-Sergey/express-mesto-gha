@@ -5,14 +5,14 @@
 const PORT = process.env.PORT || 3000;
 const express = require('express');
 const mongoose = require('mongoose');
-const { celebrate, Joi } = require('celebrate');
 const { errors } = require('celebrate');
 require('dotenv').config();
 const users = require('./routes/users');
 const cards = require('./routes/cards');
 const { return404 } = require('./utils/utils');
 const { login, createUser } = require('./controllers/users');
-const { createUserJoiValidation, signInJoiValidation, auth } = require('./middlewares/usersJoiValidation');
+const { createUserJoiValidation, signInJoiValidation } = require('./middlewares/usersJoiValidation');
+const auth = require('./middlewares/auth');
 
 async function connectToDb() {
   try {
@@ -24,22 +24,20 @@ async function connectToDb() {
 
 const app = express();
 connectToDb();
-
 app.use(express.json());
-
-app.use('/cards', cards);
-app.use('/users', users);
 app.post('/signin', signInJoiValidation(), login); // Почему валидаторы приходится вызывать? Без этого не работают(
 app.post('/signup', createUserJoiValidation(), createUser);
-app.use('*', return404);
+app.use('/cards', cards);
+app.use('/users', users);
+app.use('*', auth, return404);
 app.use(errors());
 app.use((err, req, res, next) => {
   try {
-    if (err) {
+    if (err.statusCode) {
       return res.status(err.statusCode).send({ message: err.message });
     }
   } catch (error) {
-    res.status(500).send({ message: error });
+    res.status(500).send({ message: error.message });
   }
 });
 
