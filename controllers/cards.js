@@ -6,7 +6,7 @@ const UnauthorizedError = require('../errors/UnauthorizedError');
 
 module.exports.getCards = async (req, res, next) => {
   try {
-    const cards = await Card.find({});
+    const cards = await Card.find({}).orFail(() => new Error('Нет обьектов, соответствуюих запросу'));
     res.send({ message: cards });
   } catch (err) {
     next(err);
@@ -14,16 +14,6 @@ module.exports.getCards = async (req, res, next) => {
 };
 
 module.exports.createCard = async (req, res, next) => {
-  // const { name, link } = req.body;
-  // Card.create({ name, link, owner: req.user._id })
-  //   .then((card) => res.send(card))
-  //   .catch((err) => {
-  //     if (err.name === 'ValidationError') {
-  //       next(new BadRequestError(err.message));
-  //     }
-  //     next(err);
-  //   });
-
   const { name, link } = req.body;
   try {
     const newCard = await Card.create({ name, link, owner: req.user._id });
@@ -62,31 +52,62 @@ module.exports.deleteCard = async (req, res, next) => {
   }
 };
 
-module.exports.cardLike = (req, res, next) => {
-  Card.findByIdAndUpdate(
-    req.params.cardId,
-    { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
-    { new: true }
-  )
-    .then((card) => {
-      if (card) {
-        return res.send({ data: card });
-      }
-      next(new NotFoundError('Такой карточки не существует'));
-    })
-    .catch((err) => {
-      if (err.name === 'ValidationError' || err.name === 'CastError') {
-        next(new BadRequestError(err.message));
-      }
-      next(err);
-    });
+module.exports.cardLike = async (req, res, next) => {
+  // Card.findByIdAndUpdate(
+  //   req.params.cardId,
+  //   { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
+  //   { new: true },
+  // )
+  //   .then((card) => {
+  //     if (card) {
+  //       return res.send({ data: card });
+  //     }
+  //     next(new NotFoundError('Такой карточки не существует'));
+  //   })
+  //   .catch((err) => {
+  //     if (err.name === 'ValidationError' || err.name === 'CastError') {
+  //       next(new BadRequestError(err.message));
+  //     }
+  //     next(err);
+  //   });
+
+  try {
+    const card = await Card.findByIdAndUpdate(
+      req.params.cardId,
+      { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
+      { new: true },
+    ).orFail(() => new NotFoundError('Такой карточки не существует'));
+
+    if (card) {
+      return res.send({ data: card });
+    }
+    // throw new NotFoundError('Такой карточки не существует');
+  } catch (err) {
+    if (err.name === 'ValidationError' || err.name === 'CastError') {
+      next(new BadRequestError(err.message));
+    }
+    next(err);
+  }
+
+  // Card.findByIdAndUpdate(
+  //   req.params.cardId,
+  //   { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
+  //   { new: true }
+  // )
+  //   .then((card) => {
+  //     if (card) {
+  //       return res.send({ data: card });
+  //     }
+  //     next(new NotFoundError('Такой карточки не существует'));
+  //   })
+  //   .catch((err) => {});
 };
 
 module.exports.cardDislike = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $pull: { likes: req.user._id } }, // убрать _id из массива
-    { new: true }
+    { new: true },
   )
     .then((card) => {
       if (card) {
