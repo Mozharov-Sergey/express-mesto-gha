@@ -1,5 +1,4 @@
 const express = require('express');
-const { errors } = require('celebrate');
 const auth = require('../middlewares/auth');
 const {
   getUserJoiValidation,
@@ -13,9 +12,7 @@ const {
 
 const users = express.Router();
 
-users.use(express.json());
 users.use(auth);
-users.use(errors());
 users.get('/', getUsers);
 users.get('/me', getMe);
 users.patch('/me', updateUserJoiValidation(), updateUser);

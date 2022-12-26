@@ -1,5 +1,4 @@
 const express = require('express');
-const { errors } = require('celebrate');
 const auth = require('../middlewares/auth');
 const {
   createCardJoiValidation,
@@ -14,7 +13,6 @@ const {
 const cards = express.Router();
 
 cards.use(auth);
-cards.use(errors());
 cards.get('/', getCards);
 cards.post('/', createCardJoiValidation(), createCard);
 cards.delete('/:cardId', deleteCardJoiValidation(), deleteCard);

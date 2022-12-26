@@ -12,7 +12,7 @@ const users = require('./routes/users');
 const cards = require('./routes/cards');
 const { return404 } = require('./utils/utils');
 const { login, createUser } = require('./controllers/users');
-const { createUserJoiValidation, signInJoiValidation } = require('./middlewares/usersJoiValidation');
+const { createUserJoiValidation, signInJoiValidation, auth } = require('./middlewares/usersJoiValidation');
 
 async function connectToDb() {
   try {
