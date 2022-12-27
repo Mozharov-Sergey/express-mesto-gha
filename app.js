@@ -21,7 +21,7 @@ async function connectToDb() {
 const app = express();
 connectToDb();
 app.use(express.json());
-app.post('/signin', signInJoiValidation(), login); // Почему валидаторы приходится вызывать? Без этого не работают(
+app.post('/signin', signInJoiValidation(), login);
 app.post('/signup', createUserJoiValidation(), createUser);
 app.use('/cards', cards);
 app.use('/users', users);
@@ -32,6 +32,7 @@ app.use((err, req, res, next) => {
     if (err.statusCode) {
       return res.status(err.statusCode).send({ message: err.message });
     }
+    return res.status(500).send('Ошибка на сервере'); // Блок else не нужен по правилам airbnb
   } catch (error) {
     res.status(500).send({ message: error.message });
   }

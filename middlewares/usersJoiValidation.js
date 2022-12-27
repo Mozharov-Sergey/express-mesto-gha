@@ -1,7 +1,5 @@
-/* eslint-disable no-useless-escape */
 const { celebrate, Joi } = require('celebrate');
-
-const urlRegexp = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/;
+const { urlRegexp } = require('../utils/utils');
 
 const getUserJoiValidation = () => celebrate({
   params: Joi.object().keys({
@@ -18,7 +16,7 @@ const updateUserJoiValidation = () => celebrate({
 
 const updateAvatarJoiValidation = () => celebrate({
   body: Joi.object().keys({
-    avatar: Joi.string().pattern(urlRegexp),
+    avatar: Joi.string(),
   }),
 });
 
@@ -27,9 +25,9 @@ const createUserJoiValidation = () => celebrate({
     .keys({
       name: Joi.string().min(2).max(30),
       about: Joi.string().min(2).max(30),
-      avatar: Joi.string().pattern(urlRegexp),
+      avatar: Joi.string(),
       email: Joi.string().required(true).email(),
-      password: Joi.string().required(),
+      password: Joi.string().required(true),
     })
     .unknown(true),
 });
@@ -38,7 +36,7 @@ const signInJoiValidation = () => celebrate({
   body: Joi.object()
     .keys({
       email: Joi.string().required(true).email(),
-      password: Joi.string().required(),
+      password: Joi.string().required(true),
     }),
 });
 

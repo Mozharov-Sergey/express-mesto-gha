@@ -1,3 +1,4 @@
+const validator = require('validator');
 const Card = require('../models/card');
 const BadRequestError = require('../errors/BadRequestError');
 const NotFoundError = require('../errors/NotFoundError');
@@ -15,6 +16,9 @@ module.exports.getCards = async (req, res, next) => {
 module.exports.createCard = async (req, res, next) => {
   const { name, link } = req.body;
   try {
+    if (!validator.isURL(link)) {
+      throw new BadRequestError('Невалидный URL картики');
+    }
     const newCard = await Card.create({ name, link, owner: req.user._id });
     res.send(newCard);
   } catch (err) {

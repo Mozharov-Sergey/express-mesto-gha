@@ -1,6 +1,7 @@
 require('dotenv').config();
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const validator = require('validator');
 
 const User = require('../models/user');
 
@@ -26,6 +27,10 @@ module.exports.createUser = async (req, res, next) => {
   } = req.body;
 
   try {
+    if (!validator.isURL(avatar)) {
+      throw new BadRequestError('Невалидный URL аватара');
+    }
+
     const userItem = await User.findOne({ email });
     if (userItem) {
       throw new ConflictError('Такой пользователь уже существует');
@@ -55,6 +60,7 @@ module.exports.createUser = async (req, res, next) => {
     if (err.name === 'ValidationError') {
       return next(new BadRequestError(err.message));
     }
+
     next(err);
   }
 };
@@ -122,12 +128,16 @@ module.exports.updateUser = async (req, res, next) => {
 module.exports.updateAvatar = async (req, res, next) => {
   const { avatar } = req.body;
   try {
-    await User.findByIdAndUpdate(req.user._id, {
-      avatar,
-    });
+    const x = await User.findByIdAndUpdate(
+      req.user._id,
+      {
+        avatar,
+      },
+      opts,
+    );
     res.send(req.body);
   } catch (err) {
-    if (err.name === 'ValidationError' && err.name === 'CastError') {
+    if (err.name === 'ValidationError' || err.name === 'CastError') {
       return next(new BadRequestError(err.message));
     }
     next(err);
