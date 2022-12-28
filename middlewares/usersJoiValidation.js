@@ -1,6 +1,5 @@
 const { celebrate, Joi } = require('celebrate');
 const validator = require('validator');
-const { urlRegexp } = require('../utils/utils');
 
 const customIsUrl = (value) => {
   const isUrl = validator.isURL(value);
