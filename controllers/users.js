@@ -27,10 +27,6 @@ module.exports.createUser = async (req, res, next) => {
   } = req.body;
 
   try {
-    if (!validator.isURL(avatar)) {
-      throw new BadRequestError('Невалидный URL аватара');
-    }
-
     const userItem = await User.findOne({ email });
     if (userItem) {
       throw new ConflictError('Такой пользователь уже существует');
