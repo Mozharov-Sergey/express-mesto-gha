@@ -1,13 +1,4 @@
 const { celebrate, Joi } = require('celebrate');
-const validator = require('validator');
-
-const customIsUrl = (value) => {
-  const isUrl = validator.isURL(value);
-  if (!isUrl) {
-    throw new Error('не корректный URL');
-  }
-  return value;
-};
 
 const getUserJoiValidation = () => celebrate({
   params: Joi.object().keys({
@@ -24,7 +15,7 @@ const updateUserJoiValidation = () => celebrate({
 
 const updateAvatarJoiValidation = () => celebrate({
   body: Joi.object().keys({
-    avatar: Joi.string().required().custom(customIsUrl),
+    avatar: Joi.string().required().uri(),
   }),
 });
 
@@ -33,7 +24,7 @@ const createUserJoiValidation = () => celebrate({
     .keys({
       name: Joi.string().min(2).max(30),
       about: Joi.string().min(2).max(30),
-      avatar: Joi.string().custom(customIsUrl),
+      avatar: Joi.string().uri(),
       email: Joi.string().required(true).email(),
       password: Joi.string().required(true),
     })
