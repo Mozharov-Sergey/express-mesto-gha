@@ -6,6 +6,7 @@ require('dotenv').config();
 const users = require('./routes/users');
 const cards = require('./routes/cards');
 const { return404 } = require('./utils/utils');
+const { HTTP_ERROR_500 } = require('./utils/constants');
 const { login, createUser } = require('./controllers/users');
 const { createUserJoiValidation, signInJoiValidation } = require('./middlewares/usersJoiValidation');
 const auth = require('./middlewares/auth');
@@ -32,17 +33,12 @@ app.use((err, req, res, next) => {
     if (err.statusCode) {
       return res.status(err.statusCode).send({ message: err.message });
     }
-    res.status(500).send('Ошибка на сервере');
+    res.status(HTTP_ERROR_500).send('Ошибка на сервере');
   } catch (error) {
-    res.status(500).send({ message: error.message });
+    res.status(HTTP_ERROR_500).send({ message: error.message });
   }
 });
 
 app.listen(PORT, () => {
   console.log(`Сервер успешно запущен на порту ${PORT}`);
 });
-
-// При сдаче работы, платформа не пускает работы с формулировкой
-// GitHub недоступен. Попробуйте проверить задание ещё раз
-// Эта строка нужна, что бы изменить документ и и иметь возможность
-// сделать коммит и пуш.

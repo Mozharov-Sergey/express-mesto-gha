@@ -143,7 +143,7 @@ module.exports.getMe = async (req, res, next) => {
   try {
     const user = await User.findById(req.user._id);
     if (!user) {
-      throw NotFoundError('Такого пользователя несуществует'); // Врядли до этого дойдет когда-то. Мидлвер отсечет запрос на этапе проверки токена.
+      throw NotFoundError('Такого пользователя несуществует');
     }
     return res.send(user);
   } catch (err) {
