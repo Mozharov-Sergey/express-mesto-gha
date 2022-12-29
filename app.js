@@ -33,7 +33,7 @@ app.use((err, req, res, next) => {
     if (err.statusCode) {
       return res.status(err.statusCode).send({ message: err.message });
     }
-    res.status(HTTP_ERROR_500).send('Ошибка на сервере');
+    return res.status(HTTP_ERROR_500).send('Ошибка на сервере');
   } catch (error) {
     res.status(HTTP_ERROR_500).send({ message: error.message });
   }
