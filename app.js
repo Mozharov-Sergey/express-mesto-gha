@@ -32,7 +32,7 @@ app.use((err, req, res, next) => {
     if (err.statusCode) {
       return res.status(err.statusCode).send({ message: err.message });
     }
-    return res.status(500).send('Ошибка на сервере'); // Блок else не нужен по правилам линтера
+    res.status(500).send('Ошибка на сервере');
   } catch (error) {
     res.status(500).send({ message: error.message });
   }

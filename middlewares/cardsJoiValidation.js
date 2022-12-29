@@ -1,19 +1,10 @@
 const { celebrate, Joi } = require('celebrate');
-const validator = require('validator');
-
-const customIsUrl = (value) => {
-  const isUrl = validator.isURL(value);
-  if (!isUrl) {
-    throw new Error('не корректный URL');
-  }
-  return value;
-};
 
 const createCardJoiValidation = () => celebrate({
   body: Joi.object()
     .keys({
       name: Joi.string().required().min(2).max(30),
-      link: Joi.string().required().custom(customIsUrl),
+      link: Joi.string().required(),
     })
     .unknown(true),
 });
