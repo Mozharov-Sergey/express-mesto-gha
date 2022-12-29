@@ -15,7 +15,7 @@ const updateUserJoiValidation = () => celebrate({
 
 const updateAvatarJoiValidation = () => celebrate({
   body: Joi.object().keys({
-    avatar: Joi.string().required(),
+    avatar: Joi.string().required().uri(),
   }),
 });
 
@@ -24,7 +24,7 @@ const createUserJoiValidation = () => celebrate({
     .keys({
       name: Joi.string().min(2).max(30),
       about: Joi.string().min(2).max(30),
-      avatar: Joi.string(),
+      avatar: Joi.string().uri(),
       email: Joi.string().required(true).email(),
       password: Joi.string().required(true),
     })
