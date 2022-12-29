@@ -10,7 +10,6 @@
     "consistent-return": "off",
     "no-unused-vars": "off",
     "no-console": "off",
-    "no-useless-escape": "off",
-    "linebreak-style": "off"
+    "no-useless-escape": "off"
   }
 }
